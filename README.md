@@ -1,8 +1,8 @@
-# {++title++}
+# Model Check CTL
 
 <!-- summary -->
 
-## Anout
+## About
 
 <!-- more detail -->
 
