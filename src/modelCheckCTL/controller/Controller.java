@@ -1,9 +1,9 @@
 package modelCheckCTL.controller;
+import modelCheckCTL.util.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +53,8 @@ public class Controller {
 
 		Path path = Path.of(modelName + ".kripke");
 		String kripkeDef = Files.readString(path);
-		System.out.println(kripkeDef);
+//		System.out.println(kripkeDef);
 
+		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
 	}
 }

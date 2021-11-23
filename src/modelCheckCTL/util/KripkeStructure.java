@@ -8,9 +8,13 @@ public class KripkeStructure {
     List<State> states = new LinkedList<State>();
     List<String> atoms = new LinkedList<String>();
 
-    KripkeStructure(String kripkeDef)
+    public KripkeStructure(String kripkeDef)
     {
         String[] items=kripkeDef.split(";");
+        for (String item : items )
+        {
+            System.out.println(item);
+        }
     }
 
     public State findStateByName(String stateName)
