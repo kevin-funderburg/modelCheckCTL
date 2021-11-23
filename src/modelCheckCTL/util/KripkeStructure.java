@@ -24,7 +24,7 @@ public class KripkeStructure {
         return "null";
     }
 
-    public String transistionsToString ()
+    public String transitionsToString ()
     {
         return "null";
     }
