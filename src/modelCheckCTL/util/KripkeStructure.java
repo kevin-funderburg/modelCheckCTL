@@ -11,9 +11,25 @@ public class KripkeStructure {
     public KripkeStructure(String kripkeDef)
     {
         String[] items=kripkeDef.split(";");
-        for (String item : items )
+
+        String[] stateNames = items[0].split(",");
+        String[] transitionDefs = items[1].replace("\n", "").split(",");
+        String[] atomDefs = items[2].replace("\n", "").split(",");
+
+        for (String stateName : stateNames)
         {
-            System.out.println(item);
+            State state = new State(stateName);
+            if (!states.contains(state))
+                states.add(state);
+            else
+                System.out.println("State " + stateName + " already defined.");
+        }
+
+        for (String trans : transitionDefs)
+        {
+            String[] transItems = trans.split(" : ");
+
+            String transName = transItems[0];
         }
     }
 
