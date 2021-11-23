@@ -16,23 +16,6 @@ import modelCheckCTL.view.View;
 
 public class Controller {
 	
-//	private Model model;
-//	private View view;
-//
-//	public Controller()
-//	{
-//		model = new Model(this);
-//		view = new View(this, model);
-//	}
-//	public void setModel(Model m)
-//	{
-//		model = m;
-//	}
-//	public void setView(View v)
-//	{
-//		view = v;
-//	}
-	
 	public static void main(String[] args)
 		throws IOException {
 
@@ -53,7 +36,6 @@ public class Controller {
 
 		Path path = Path.of(modelName + ".kripke");
 		String kripkeDef = Files.readString(path);
-//		System.out.println(kripkeDef);
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
 	}
