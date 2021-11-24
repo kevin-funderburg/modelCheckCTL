@@ -24,16 +24,16 @@ public class Controller {
 				new InputStreamReader(System.in));
 
 		System.out.println("Welcome to our Model Check CTL!\n\n" +
-				"Available Kripke structures: model1, model2, model3, model4");
+				"Available Kripke structures: 1, 2, 3, 4, 5, 6, 7");
 
 		System.out.print("Enter the desired model: ");
-		String modelName = reader.readLine();
+		String modelNum = reader.readLine();
 
 		System.out.print("Enter the CTL formula: ");
 		String ctlFormula = reader.readLine();
 		System.out.println("you entered: " + ctlFormula);
 
-		Path path = Path.of(modelName + ".kripke");
+		Path path = Path.of("Test Files/Model " + modelNum  + ".txt");
 		String kripkeDef = Files.readString(path);
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);

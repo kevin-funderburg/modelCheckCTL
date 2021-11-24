@@ -12,11 +12,20 @@ public class KripkeStructure {
     {
         String[] items=kripkeDef.split(";");
 
-        String[] stateNames = items[0].split(", ");
-        String[] transDefs = items[1].replace("\n", "").split(",");
-        String[] atomDefs = items[2].replace("\n", "").split(",");
+        String[] stateNames = items[0].replace(" ", "").split(",");
+        String[] transDefs = items[1].replace("\n", "").replace("\r", "").split(",");
+        String[] atomDefs = items[2].replace("\n", "").replace("\r", "").replace("\t", "").split(",");
+
+//        for (String stateName : stateNames)
+//        {
+//            System.out.println("stateName: " + stateName);
+//        }
 
         parseStates(stateNames);
+//
+//        for (State state : states) {
+//            System.out.println("state.name = " + state.name);
+//        }
         parseTrans(transDefs);
         parseAtoms(atomDefs);
     }
@@ -25,7 +34,15 @@ public class KripkeStructure {
     {
         for (String stateName : stateNames)
         {
+            System.out.println("stateName: " + stateName);
+//            stateName = stateName.replace(" ", "");
+//            stateName = stateName.replace("\t", "");
+            stateName = stateName.strip();
+            System.out.println("stateName: " + stateName);
+
             State state = new State(stateName);
+            System.out.println("state.name: " + state.name);
+
             if (!states.contains(state))
                 states.add(state);
             else
@@ -40,25 +57,25 @@ public class KripkeStructure {
      */
     public void parseTrans(String[] transDefs)
     {
-        for (String trans : transDefs)
-        {
-            String[] transItems = trans.split(" : ");
+            for (String trans : transDefs)
+            {
+                String[] transItems = trans.split(" : ");
 
-            String transName = transItems[0];
-            String[] FromTos = transItems[1].split(" - ");
+                String transName = transItems[0];
+                String[] FromTos = transItems[1].split(" - ");
 
-            if (FromTos.length == 2) {
-                String fromStateName = FromTos[0];
-                String toStateName = FromTos[1];
-                State fromState = findStateByName(fromStateName);
-                State toState = findStateByName(toStateName);
+                if (FromTos.length == 2) {
+                    String fromStateName = FromTos[0].replace(" ", "");
+                    String toStateName = FromTos[1].replace(" ", "");
+                    State fromState = findStateByName(fromStateName);
+                    State toState = findStateByName(toStateName);
 
-                Transition t = new Transition(transName, fromState, toState);
-                if (!transitions.contains(t))
-                    transitions.add(t);
+                    Transition t = new Transition(transName, fromState, toState);
+                    if (!transitions.contains(t))
+                        transitions.add(t);
+                }
             }
         }
-    }
 
     /**
      * this should receive a list of atomic definitions with the following format:
@@ -93,8 +110,11 @@ public class KripkeStructure {
 
     public State findStateByName(String stateName)
     {
-        for (State state : states)
-            if (state.name.equals(stateName)) return state;
+        for (State state : states) {
+            System.out.println("state.name = " + state.name);
+            if (state.name.equals(stateName))
+                return state;
+        }
         return null;
     }
 
@@ -127,7 +147,7 @@ public class KripkeStructure {
         return fullStateString;
     }
 
-    public String transitionsToString ()
+    public String transitionsToString()
     {
         String fulltstring = "";
         String tstring;
@@ -140,7 +160,7 @@ public class KripkeStructure {
                 fulltstring += ", ";
             i++;
         }
-        System.out.println("fulltstring: " + fulltstring);
+//        System.out.println("fulltstring: " + fulltstring);
         return fulltstring;
     }
 }

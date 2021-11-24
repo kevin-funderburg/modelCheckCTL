@@ -27,25 +27,31 @@ public class CtlFormula {
     KripkeStructure kripke;
     State state;
     String expression;
-    Hashtable<String, String> toString;
+    Hashtable<String, String> symbolDict;
 
-    public CtlFormula(String expr, State s, KripkeStructure krip)
+    public CtlFormula(String expr, State s, KripkeStructure k)
     {
-        toString = new Hashtable<String, String>();
-        toString.put("and", "&");
-        toString.put("or", "|");
-        toString.put("→", ">");
-        toString.put("not", "!");
+        symbolDict = new Hashtable<String, String>();
+        symbolDict.put("and", "&");
+        symbolDict.put("or", "|");
+        symbolDict.put("->", ">");
+        symbolDict.put("not", "!");
 
         kripke = k;
         state = s;
         expression = expr;
     }
 
-
+    public String swapSymbols(String expr)
+    {
+        symbolDict.forEach((key, value) -> expr.replace(key, value));
+        return expr;
+    }
+    
     private List<State> SAT(String expression) throws Exception {
         List<State> states = new LinkedList<State>();
         SATkind satkind = SATkind.AX;   //placeholder, remove later
+
         switch (satkind)
         {
             case AllTrue -> {
@@ -116,5 +122,8 @@ public class CtlFormula {
         return states;
     }
 
-    public SATkind getSATtype
+    private SATkind getSATkind(String expr, String leftExpr, String rightExpr)
+    {
+        return SATkind.AF;
+    }
 }
