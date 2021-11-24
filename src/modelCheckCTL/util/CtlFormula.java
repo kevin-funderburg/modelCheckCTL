@@ -25,13 +25,21 @@ enum TypeSAT
 
 public class CtlFormula {
 
-    KripkeStructure _kripke;
-    State _state;
-    String _expression;
-    Hashtable<String, String> _toString;
+    KripkeStructure kripke;
+    State state;
+    String expression;
+    Hashtable<String, String> toString;
 
-    public CtlFormula(String expression, State state, KripkeStructure kripke)
+    public CtlFormula(String expr, State s, KripkeStructure krip)
     {
-        _toString = new Hashtable<String, String>();
+        toString = new Hashtable<String, String>();
+        toString.put("and", "&");
+        toString.put("or", "|");
+        toString.put("→", ">");
+        toString.put("not", "!");
+
+        kripke = k;
+        state = s;
+        expression = expr;
     }
 }
