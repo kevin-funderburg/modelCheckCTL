@@ -38,5 +38,6 @@ public class Controller {
 		String kripkeDef = Files.readString(path);
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
+		kripkeStructure.out();
 	}
 }

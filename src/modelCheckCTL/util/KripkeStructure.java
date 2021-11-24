@@ -12,7 +12,7 @@ public class KripkeStructure {
     {
         String[] items=kripkeDef.split(";");
 
-        String[] stateNames = items[0].split(",");
+        String[] stateNames = items[0].split(", ");
         String[] transDefs = items[1].replace("\n", "").split(",");
         String[] atomDefs = items[2].replace("\n", "").split(",");
 
@@ -45,19 +45,26 @@ public class KripkeStructure {
             String[] transItems = trans.split(" : ");
 
             String transName = transItems[0];
-            String[] FromTos = trans.split(" - ");
+            String[] FromTos = transItems[1].split(" - ");
 
-            String fromStateName = FromTos[0];
-            String toStateName = FromTos[1];
-            State fromState = findStateByName(fromStateName);
-            State toState = findStateByName(toStateName);
+            if (FromTos.length == 2) {
+                String fromStateName = FromTos[0];
+                String toStateName = FromTos[1];
+                State fromState = findStateByName(fromStateName);
+                State toState = findStateByName(toStateName);
 
-            Transition t = new Transition(transName, fromState, toState);
-            if (!transitions.contains(t))
-                transitions.add(t);
+                Transition t = new Transition(transName, fromState, toState);
+                if (!transitions.contains(t))
+                    transitions.add(t);
+            }
         }
     }
 
+    /**
+     * this should receive a list of atomic definitions with the following format:
+     * {state name}: {atom1}, {atom2}, etc
+     * @param atomDefs
+     */
     public void parseAtoms(String[] atomDefs)
     {
         for (String atomDef : atomDefs)
@@ -65,22 +72,71 @@ public class KripkeStructure {
             String[] atomItems = atomDef.split(" : ");
 
             String stateName = atomItems[0];
+
+            if (atomItems.length == 2)
+            {
+                String[] atomNames = atomItems[1].split(" ");
+
+                State s = findStateByName(stateName);
+                if (s == null)
+                    System.out.println("State " + stateName + " not defined");
+
+                s.atoms.addAll(Arrays.asList(atomNames));
+
+                for (String atomName : atomNames) {
+                    if (!atoms.contains(atomName))
+                        atoms.add(atomName);
+                }
+            }
         }
     }
 
     public State findStateByName(String stateName)
     {
-
+        for (State state : states)
+            if (state.name.equals(stateName)) return state;
         return null;
+    }
+
+    public void out()
+    {
+        StringBuilder str = new StringBuilder();
+        str.append("STATES\n");
+        str.append("-----------\n");
+//        str.append(statesToString());
+        str.append("\n");
+        str.append("TRANSITIONS\n");
+        str.append("--------------------\n");
+        str.append(transitionsToString());
+        str.append("\n");
+
+        System.out.println(str.toString());
     }
 
     public String statesToString()
     {
+        for (State state : states)
+        {
+
+        }
         return "null";
     }
 
     public String transitionsToString ()
     {
-        return "null";
+//        List<String> tstrings = new LinkedList<String>();
+        String fulltstring = "";
+        String tstring;
+        int i = 0;
+        for (Transition t : transitions)
+        {
+            tstring = "(" + t.FromState.name + ", " + t.ToState.name + ")";
+            fulltstring += tstring;
+            if (i < transitions.size()-1)
+                fulltstring += ", ";
+            i++;
+        }
+        System.out.println("fulltstring: " + fulltstring);
+        return fulltstring;
     }
 }
