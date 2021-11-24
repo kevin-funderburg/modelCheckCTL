@@ -14,8 +14,5 @@ public class State {
         atoms = new LinkedList<String>();
     }
 
-    boolean isEqual(State other)
-    {
-        return name == other.name;
-    }
+    boolean isEqual(State other) { return name.equals(other.name); }
 }

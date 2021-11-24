@@ -103,7 +103,7 @@ public class KripkeStructure {
         StringBuilder str = new StringBuilder();
         str.append("STATES\n");
         str.append("-----------\n");
-//        str.append(statesToString());
+        str.append(statesToString() + "\n");
         str.append("\n");
         str.append("TRANSITIONS\n");
         str.append("--------------------\n");
@@ -115,16 +115,20 @@ public class KripkeStructure {
 
     public String statesToString()
     {
+        String fullStateString = "";
+        int i = 0;
         for (State state : states)
         {
-
+            fullStateString += state.name;
+            if (i < states.size()-1)
+                fullStateString += ", ";
+            i++;
         }
-        return "null";
+        return fullStateString;
     }
 
     public String transitionsToString ()
     {
-//        List<String> tstrings = new LinkedList<String>();
         String fulltstring = "";
         String tstring;
         int i = 0;

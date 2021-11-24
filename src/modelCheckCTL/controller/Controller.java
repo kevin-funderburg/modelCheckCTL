@@ -23,7 +23,6 @@ public class Controller {
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(System.in));
 
-//		Controller control = new Controller();
 		System.out.println("Welcome to our Model Check CTL!\n\n" +
 				"Available Kripke structures: model1, model2, model3, model4");
 
