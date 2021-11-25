@@ -12,7 +12,7 @@ public class KripkeStructure {
     {
         String[] items=kripkeDef.split(";");
 
-        String[] stateNames = items[0].replace(" ", "").split(",");
+        String[] stateNames = items[0].split(",");
         String[] transDefs = items[1].replace("\n", "").replace("\r", "").split(",");
         String[] atomDefs = items[2].replace("\n", "").replace("\r", "").replace("\t", "").split(",");
 
@@ -112,7 +112,7 @@ public class KripkeStructure {
     {
         for (State state : states) {
             System.out.println("state.name = " + state.name);
-            if (state.name.equals(stateName))
+            if (state.name.contains(stateName))
                 return state;
         }
         return null;
