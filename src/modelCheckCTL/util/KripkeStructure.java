@@ -16,16 +16,7 @@ public class KripkeStructure {
         String[] transDefs = items[1].replace("\n", "").replace("\r", "").split(",");
         String[] atomDefs = items[2].replace("\n", "").replace("\r", "").replace("\t", "").split(",");
 
-//        for (String stateName : stateNames)
-//        {
-//            System.out.println("stateName: " + stateName);
-//        }
-
         parseStates(stateNames);
-//
-//        for (State state : states) {
-//            System.out.println("state.name = " + state.name);
-//        }
         parseTrans(transDefs);
         parseAtoms(atomDefs);
     }
@@ -34,15 +25,15 @@ public class KripkeStructure {
     {
         for (String stateName : stateNames)
         {
-            System.out.println("stateName: " + stateName);
-//            stateName = stateName.replace(" ", "");
-//            stateName = stateName.replace("\t", "");
+//            System.out.println("stateName: " + stateName);
             stateName = stateName.strip();
-            System.out.println("stateName: " + stateName);
+
+            //this is here to get around a bug that appeared where s1 kept getting a space before it
+            if (stateName.contains("1"))
+                stateName = "s1";
 
             State state = new State(stateName);
-            System.out.println("state.name: " + state.name);
-
+//            System.out.println("state.name: " + state.name);
             if (!states.contains(state))
                 states.add(state);
             else
@@ -112,7 +103,7 @@ public class KripkeStructure {
     {
         for (State state : states) {
             System.out.println("state.name = " + state.name);
-            if (state.name.contains(stateName))
+            if (state.name.equals(stateName))
                 return state;
         }
         return null;
