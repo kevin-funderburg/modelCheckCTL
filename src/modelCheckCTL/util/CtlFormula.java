@@ -4,14 +4,14 @@ import java.util.*;
 
 enum SATkind
 {
-    Unknown,
-    AllTrue,
-    AllFalse,
-    Atomic,
-    Not,
-    And,
-    Or,
-    Implies,
+    UNKNOWN,
+    ALL_TRUE,
+    ALL_FALSE,
+    ATOMIC,
+    NOT,
+    AND,
+    OR,
+    IMPLIES,
     AX,
     EX,
     AU,
@@ -78,21 +78,21 @@ public class CtlFormula {
         {
 //            if (IsBinaryOp(expression, ">", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(expression, ">"))
-                return SATkind.Implies;
+                return SATkind.IMPLIES;
         }
         //look for binary and
         if (expression.contains("&"))
         {
 //            if (IsBinaryOp(expression, "&", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(expression, "&"))
-                return SATkind.And;
+                return SATkind.AND;
         }
         //look for binary or
         if (expression.contains("|"))
         {
 //            if (IsBinaryOp(expression, "|", ref leftExpression, ref rightExpression);
             if (IsBinaryOp(expression, "|"))
-                return SATkind.Or;
+                return SATkind.OR;
         }
         //look for binary AU
         if (expression.startsWith("A("))
@@ -115,22 +115,22 @@ public class CtlFormula {
         if (expression.equals("T"))
         {
             leftExpr = expression;
-            return SATkind.AllTrue;
+            return SATkind.ALL_TRUE;
         }
         if (expression.equals("F"))
         {
             leftExpr = expression;
-            return SATkind.AllFalse;
+            return SATkind.ALL_FALSE;
         }
         if (isAtomic(expression))
         {
             leftExpr = expression;
-            return SATkind.Atomic;
+            return SATkind.ATOMIC;
         }
         if (expression.startsWith("!"))
         {
             leftExpr = expression.substring(1, expression.length() - 1);
-            return SATkind.Not;
+            return SATkind.NOT;
         }
         if (expression.startsWith("AX"))
         {
@@ -164,7 +164,7 @@ public class CtlFormula {
             return SATkind.AG;
         }
 
-        return SATkind.Unknown;
+        return SATkind.UNKNOWN;
 
     }
 
@@ -175,7 +175,7 @@ public class CtlFormula {
      * @throws Exception
      */
 //    private List<State> SAT(String expression) throws Exception {
-    public List<State> SAT(String expression) throws Exception {
+    private List<State> SAT(String expression) throws Exception {
 
         List<State> states = new LinkedList<State>();
 
@@ -261,13 +261,12 @@ public class CtlFormula {
         return states;
     }
 
-    private List<State> SAT_EX(String expression)
-    {
+    private List<State> SAT_EX(String expression) throws Exception {
         //X := SAT (φ);
         //Y := pre∃(X);
         //return Y
-        List<State> x = new LinkedList<State>();
-        List<State> y = new LinkedList<State>();
+        List<State> x;
+        List<State> y;
         x = SAT(expression);
         y = PreE(x);
         return y;

@@ -39,6 +39,6 @@ public class Controller {
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
 		kripkeStructure.printStructure();
 		CtlFormula ctlFormula = new CtlFormula(ctlExpression, kripkeStructure.states.get(1), kripkeStructure);
-		ctlFormula.SAT(ctlFormula.expression);
+		ctlFormula.satisfies();
 	}
 }
