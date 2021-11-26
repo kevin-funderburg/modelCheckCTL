@@ -17,7 +17,7 @@ import modelCheckCTL.view.View;
 public class Controller {
 	
 	public static void main(String[] args)
-		throws IOException {
+			throws Exception {
 
 		// Enter data using BufferReader
 		BufferedReader reader = new BufferedReader(
@@ -30,13 +30,15 @@ public class Controller {
 		String modelNum = reader.readLine();
 
 		System.out.print("Enter the CTL formula: ");
-		String ctlFormula = reader.readLine();
-		System.out.println("you entered: " + ctlFormula);
+		String ctlExpression = reader.readLine();
+		System.out.println("you entered: " + ctlExpression);
 
 		Path path = Path.of("Test Files/Model " + modelNum  + ".txt");
 		String kripkeDef = Files.readString(path);
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
-		kripkeStructure.out();
+		kripkeStructure.printStructure();
+		CtlFormula ctlFormula = new CtlFormula(ctlExpression, kripkeStructure.states.get(1), kripkeStructure);
+		ctlFormula.SAT(ctlFormula.expression);
 	}
 }

@@ -4,9 +4,9 @@ import java.util.*;
 
 public class KripkeStructure {
 
-    List<Transition> transitions = new LinkedList<Transition>();
-    List<State> states = new LinkedList<State>();
-    List<String> atoms = new LinkedList<String>();
+    public List<Transition> transitions = new LinkedList<Transition>();
+    public List<State> states = new LinkedList<State>();
+    public List<String> atoms = new LinkedList<String>();
 
     public KripkeStructure(String kripkeDef)
     {
@@ -102,56 +102,61 @@ public class KripkeStructure {
     public State findStateByName(String stateName)
     {
         for (State state : states) {
-            System.out.println("state.name = " + state.name);
             if (state.name.equals(stateName))
                 return state;
         }
         return null;
     }
 
-    public void out()
+    public void printStructure()
     {
         StringBuilder str = new StringBuilder();
-        str.append("STATES\n");
-        str.append("-----------\n");
-        str.append(statesToString() + "\n");
+        str.append("-------------------------\n");
+        str.append("STATES AND ATOMS\n");
+        str.append("-------------------------\n");
+        str.append(printStates() + "\n");
         str.append("\n");
+        str.append("-------------------------\n");
         str.append("TRANSITIONS\n");
-        str.append("--------------------\n");
-        str.append(transitionsToString());
+        str.append("-------------------------\n");
+        str.append(printTransitions());
         str.append("\n");
 
         System.out.println(str.toString());
     }
 
-    public String statesToString()
+    public String printStates()
     {
         String fullStateString = "";
         int i = 0;
         for (State state : states)
         {
-            fullStateString += state.name;
-            if (i < states.size()-1)
+            fullStateString += state.name + ": ";
+            for (String atom : state.atoms)
+            {
+                fullStateString += atom;
                 fullStateString += ", ";
+            }
+            if (i < states.size()-1)
+                fullStateString += "\n";
             i++;
         }
         return fullStateString;
     }
 
-    public String transitionsToString()
+    public String printTransitions()
     {
         String fulltstring = "";
         String tstring;
         int i = 0;
         for (Transition t : transitions)
         {
-            tstring = "(" + t.FromState.name + ", " + t.ToState.name + ")";
-            fulltstring += tstring;
+            tstring = t.FromState.name + " -> " + t.ToState.name;
+            fulltstring += t.name + ": " + tstring;
             if (i < transitions.size()-1)
-                fulltstring += ", ";
+                fulltstring += "\n";
             i++;
         }
-//        System.out.println("fulltstring: " + fulltstring);
         return fulltstring;
     }
 }
