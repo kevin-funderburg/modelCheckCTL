@@ -122,11 +122,11 @@ public class CtlFormula {
             leftExpr = expression;
             return SATkind.AllFalse;
         }
-//        if (IsAtomic(expression))
-//        {
-//            leftExpr = expression;
-//            return SATkind.Atomic;
-//        }
+        if (isAtomic(expression))
+        {
+            leftExpr = expression;
+            return SATkind.Atomic;
+        }
         if (expression.startsWith("!"))
         {
             leftExpr = expression.substring(1, expression.length() - 1);
@@ -261,7 +261,65 @@ public class CtlFormula {
         return states;
     }
 
+    private List<State> SAT_EX(String expression)
+    {
+        //X := SAT (φ);
+        //Y := pre∃(X);
+        //return Y
+        List<State> x = new LinkedList<State>();
+        List<State> y = new LinkedList<State>();
+        x = SAT(expression);
+        y = PreE(x);
+        return y;
+    }
 
+
+    private List<State> PreE(List<State> y)
+    {
+        //{s ∈ S | exists s, (s → s and s ∈ Y )}
+        List<State> states = new LinkedList<State>();
+
+        List<Transition> transitions = new LinkedList<Transition>();
+        for (State sourceState : kripke.states)
+        {
+            for (State destState : y)
+            {
+                Transition myTransition = new Transition(sourceState, destState);
+                if (kripke.transitions.contains(myTransition))
+                {
+                    if (!states.contains(sourceState))
+                        states.add(sourceState);
+                }
+            }
+        }
+
+        return states;
+    }
+
+    private List<State> PreA(List<State> y)
+    {
+        //pre∀(Y ) = pre∃y − pre∃(S − Y)
+        List<State> PreEY = PreE(y);
+
+        List<State> S_Minus_Y = new LinkedList<State>(kripke.states);
+
+        for (State state : y)
+        {
+            if (S_Minus_Y.contains(state))
+                S_Minus_Y.remove(state);
+        }
+
+        List<State> PreE_S_Minus_Y = PreE(S_Minus_Y);
+
+        //PreEY - PreE(S-Y)
+        for (State state : PreE_S_Minus_Y)
+        {
+            if (PreEY.contains(state))
+                PreEY.remove(state);
+        }
+
+        return PreEY;
+    }
 
 //    private boolean IsBinaryOp(String expression, String symbol, String leftExpression, String rightExpression)
     private boolean IsBinaryOp(String expression, String symbol)
@@ -297,7 +355,23 @@ public class CtlFormula {
         return isBinaryOp;
     }
 
-//    private splitExpression(String )
+    private boolean AreListStatesEqual(List<State> list1, List<State> list2)
+    {
+        if (list1.size() != list2.size())
+            return false;
+
+        for (State state : list1)
+        {
+            if (!list2.contains(state))
+                return false;
+        }
+
+        return true;
+    }
+
+    private boolean isAtomic(String expression) { return kripke.atoms.contains(expression); }
+
+    //    private splitExpression(String )
     private String RemoveExtraBrackets(String expression)
     {
         String newExpression = expression;
