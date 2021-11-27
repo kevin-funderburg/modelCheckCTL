@@ -24,7 +24,7 @@ public class Controller {
 				new InputStreamReader(System.in));
 
 		System.out.println("Welcome to our Model Check CTL!\n\n" +
-				"Available Kripke structures: 1, 2, 3, 4, 5, 6, 7");
+				"Available Kripke structures: 1, 2, 3, 4, 5, 6, 7, Microwave");
 
 		System.out.print("Enter the desired model: ");
 		String modelNum = reader.readLine();

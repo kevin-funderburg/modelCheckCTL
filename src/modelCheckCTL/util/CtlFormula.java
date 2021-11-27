@@ -64,7 +64,6 @@ public class CtlFormula {
         return states.contains(state);
     }
 
-
 //    private SATkind getSATkind(String expr, String leftExpr, String rightExpr)
     private SATkind getSATkind(String expr)
     {
