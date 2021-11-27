@@ -23,21 +23,23 @@ public class KripkeStructure {
 
     public void parseStates(String[] stateNames)
     {
+        int i = 0;
         for (String stateName : stateNames)
         {
-//            System.out.println("stateName: " + stateName);
+            System.out.println("stateName: " + stateName);
             stateName = stateName.strip();
 
             //this is here to get around a bug that appeared where s1 kept getting a space before it
-            if (stateName.contains("1"))
-                stateName = "s1";
+            if (i == 0) stateName = "s1";
 
             State state = new State(stateName);
-//            System.out.println("state.name: " + state.name);
+            System.out.println("state.name: " + state.name);
             if (!states.contains(state))
                 states.add(state);
             else
                 System.out.println("State " + stateName + " already defined.");
+
+            i++;
         }
     }
 
@@ -151,10 +153,14 @@ public class KripkeStructure {
         int i = 0;
         for (Transition t : transitions)
         {
-            tstring = t.FromState.name + " -> " + t.ToState.name;
-            fulltstring += t.name + ": " + tstring;
-            if (i < transitions.size()-1)
-                fulltstring += "\n";
+            if (t == null)
+                fulltstring = "";
+            else {
+                tstring = t.FromState.name + " -> " + t.ToState.name;
+                fulltstring += t.name + ": " + tstring;
+                if (i < transitions.size() - 1)
+                    fulltstring += "\n";
+            }
             i++;
         }
         return fulltstring;
