@@ -190,72 +190,128 @@ public class CtlFormula {
 
 
 
-//        switch (satkind)
-//        {
-//            case AllTrue -> {
-//
-//                break;
-//            }
-//            case AllFalse -> {
-//
-//                break;
-//            }
-//            case Atomic -> {
-//
-//                break;
-//            }
-//            case Not -> {
-//
-//                break;
-//            }
-//            case And -> {
-//
-//                break;
-//            }
-//            case Or -> {
-//
-//                break;
-//            }
-//            case Implies -> {
-//
-//                break;
-//            }
-//            case AX -> {
-//
-//                break;
-//            }
-//            case EX -> {
-//
-//                break;
-//            }
-//            case AU -> {
-//
-//                break;
-//            }
-//            case EU -> {
-//
-//                break;
-//            }
-//            case EF -> {
-//
-//                break;
-//            }
-//            case EG -> {
-//
-//                break;
-//            }
-//            case AF -> {
-//
-//                break;
-//            }
-//            case AG -> {
-//
-//                break;
-//            }
-//            case Unknown -> {
-//                throw new Exception("Invalid CTL expression");
-//            }
-//        }
+        switch (satkind)
+        {
+            case ALL_TRUE -> {
+                states.addAll(kripke.states);
+                break;
+            }
+            case ALL_FALSE -> {
+                break;
+            }
+            case ATOMIC -> {
+                for (State state : kripke.states)
+                {
+                    if (state.atoms.contains(leftExpr))
+                        states.add(state);
+                }
+                break;
+            }
+            case NOT -> {
+                states.addAll(kripke.states);
+                List<State> f1States = SAT(leftExpr);
+
+                for (State state : f1States)
+                    states.remove(state);
+
+                break;
+            }
+            case AND -> {
+                List<State> andF1States = SAT(leftExpr);
+                List<State> andF2States = SAT(rightExpr);
+
+                for (State state : andF1States)
+                {
+                    if (andF2States.contains(state))
+                        states.add(state);
+                }
+                break;
+            }
+            case OR -> {
+                List<State> orF1States = SAT(leftExpr);
+                List<State> orF2States = SAT(rightExpr);
+
+                states = orF1States;
+                for (State state : orF2States)
+                {
+                    if (!states.contains(state))
+                        states.add(state);
+                }
+                break;
+            }
+            case IMPLIES -> {
+                String impliesFormula = "!" + leftExpr + "|" + rightExpr;
+                states = SAT(impliesFormula);
+                break;
+            }
+            case AX -> {
+                String axFormula = "!EX!" + leftExpr;
+                states = SAT(axFormula);
+
+                //check if states actually has link to next state
+                List<State> tempStates = new LinkedList<State>();
+                for (State sourceState : states)
+                {
+                    for (Transition transition : kripke.transitions)
+                    {
+                        if (sourceState.equals(transition.FromState))
+                        {
+                            tempStates.add(sourceState);
+                            break;
+                        }
+                    }
+                }
+                states = tempStates;
+                break;
+            }
+            case EX -> {
+                //TODO: reevaluate exFormula
+                String exFormula = leftExpr;
+                states = SAT_EX(exFormula);
+                break;
+            }
+            case AU -> {
+                StringBuilder auFormulaBuilder = new StringBuilder();
+                auFormulaBuilder.append("!(E(!");
+                auFormulaBuilder.append(rightExpr);
+                auFormulaBuilder.append("U(!");
+                auFormulaBuilder.append(leftExpr);
+                auFormulaBuilder.append("&!");
+                auFormulaBuilder.append(rightExpr);
+                auFormulaBuilder.append("))|(EG!");
+                auFormulaBuilder.append(rightExpr);
+                auFormulaBuilder.append("))");
+                states = SAT(auFormulaBuilder.toString());
+                break;
+            }
+            case EU -> {
+                states = SAT_EU(leftExpr, rightExpr);
+                break;
+            }
+            case EF -> {
+                String efFormula = "E(TU" + leftExpr + ")";
+                states = SAT(efFormula);
+                break;
+            }
+            case EG -> {
+                String egFormula = "!AF!" + leftExpr;
+                states = SAT(egFormula);
+                break;
+            }
+            case AF -> {
+                String afFormula = leftExpr;
+                states = SAT_AF(afFormula);
+                break;
+            }
+            case AG -> {
+                String agFormula = "!EF!" + leftExpr;
+                states = SAT(agFormula);
+                break;
+            }
+            case UNKNOWN -> {
+                throw new Exception("Invalid CTL expression");
+            }
+        }
 
         return states;
     }
@@ -271,6 +327,64 @@ public class CtlFormula {
         return y;
     }
 
+    private List<State> SAT_EU(String leftExpression, String rightExpression) throws Exception {
+        List<State> w = new LinkedList<State>();
+        List<State> x = new LinkedList<State>();
+        List<State> y = new LinkedList<State>();
+
+        w = SAT(leftExpression);
+        x.addAll(kripke.states);
+        y = SAT(rightExpression);
+
+        while (!AreListStatesEqual(x, y))
+        {
+            x = y;
+            List<State> newY = new LinkedList<State>();
+            List<State> preEStates = PreE(y);
+
+            newY.addAll(y);
+            List<State> wAndPreE = new LinkedList<State>();
+            for (State state : w)
+            {
+                if (preEStates.contains(state))
+                    wAndPreE.add(state);
+            }
+
+            for (State state : wAndPreE)
+            {
+                if (!newY.contains(state))
+                    newY.add(state);
+            }
+            y = newY;
+        }
+
+        return y;
+    }
+
+    private List<State> SAT_AF(String expression) throws Exception {
+        List<State> x = new LinkedList<State>();
+        x.addAll(kripke.states);
+        List<State> y = new LinkedList<State>();
+        y = SAT(expression);
+
+        while (!AreListStatesEqual(x, y))
+        {
+            x = y;
+            List<State> newY = new LinkedList<State>();
+            List<State> preAStates = PreA(y);
+            newY.addAll(y);
+
+            for (State state : preAStates)
+            {
+                if (!newY.contains(state))
+                    newY.add(state);
+            }
+
+            y = newY;
+        }
+
+        return y;
+    }
 
     private List<State> PreE(List<State> y)
     {
