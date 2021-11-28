@@ -8,8 +8,7 @@ public class KripkeStructure {
     public List<State> states = new LinkedList<State>();
     public List<String> atoms = new LinkedList<String>();
 
-    public KripkeStructure(String kripkeDef)
-    {
+    public KripkeStructure(String kripkeDef) throws Exception {
         String[] items=kripkeDef.split(";");
 
         String[] stateNames = items[0].split(",");
@@ -21,23 +20,22 @@ public class KripkeStructure {
         parseAtoms(atomDefs);
     }
 
-    public void parseStates(String[] stateNames)
-    {
+    public void parseStates(String[] stateNames) throws Exception {
         int i = 0;
         for (String stateName : stateNames)
         {
-            System.out.println("stateName: " + stateName);
+//            System.out.println("stateName: " + stateName);
             stateName = stateName.strip();
 
             //this is here to get around a bug that appeared where s1 kept getting a space before it
             if (i == 0) stateName = "s1";
 
             State state = new State(stateName);
-            System.out.println("state.name: " + state.name);
+//            System.out.println("state.name: " + state.name);
             if (!states.contains(state))
                 states.add(state);
             else
-                System.out.println("State " + stateName + " already defined.");
+                throw new Exception("State " + stateName + " already defined.");
 
             i++;
         }
@@ -75,8 +73,7 @@ public class KripkeStructure {
      * {state name}: {atom1}, {atom2}, etc
      * @param atomDefs
      */
-    public void parseAtoms(String[] atomDefs)
-    {
+    public void parseAtoms(String[] atomDefs) throws Exception {
         for (String atomDef : atomDefs)
         {
             String[] atomItems = atomDef.split(" : ");
@@ -89,7 +86,7 @@ public class KripkeStructure {
 
                 State s = findStateByName(stateName);
                 if (s == null)
-                    System.out.println("State " + stateName + " not defined");
+                    throw new Exception("State " + stateName + " not defined");
 
                 s.atoms.addAll(Arrays.asList(atomNames));
 

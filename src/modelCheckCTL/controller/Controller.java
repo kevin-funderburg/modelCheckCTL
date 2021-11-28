@@ -44,7 +44,12 @@ public class Controller {
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
 		kripkeStructure.printStructure();
-		CtlFormula ctlFormula = new CtlFormula(ctlExpression, kripkeStructure.states.get(1), kripkeStructure);
-		ctlFormula.satisfies();
+
+		for (State state : kripkeStructure.states)
+		{
+			CtlFormula ctlFormula = new CtlFormula(ctlExpression, state, kripkeStructure);
+			System.out.println(state.name + ": " + ctlFormula.satisfies());
+		}
+
 	}
 }

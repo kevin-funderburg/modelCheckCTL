@@ -5,8 +5,8 @@ import java.util.List;
 
 public class State {
 
-    String name;
-    List<String> atoms;
+    public String name;
+    public List<String> atoms;
 
     public State(String stateName)
     {

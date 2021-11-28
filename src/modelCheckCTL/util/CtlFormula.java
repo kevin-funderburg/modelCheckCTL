@@ -22,8 +22,6 @@ enum SATkind
     AG
 }
 
-
-
 public class CtlFormula {
 
     public KripkeStructure kripke;
@@ -38,6 +36,8 @@ public class CtlFormula {
         kripke = k;
         state = s;
         expression = swapSymbols(expr);
+        String leftExpr = "";
+        String rightExpr = "";
     }
 
     public String swapSymbols(String expr)
@@ -69,8 +69,8 @@ public class CtlFormula {
     {
 
         //remove extra brackets
-        expression = RemoveExtraBrackets(expression);
-        System.out.println("expression after bracket strip: " + expression);
+        expression = RemoveExtraBrackets(expr);
+//        System.out.println("expression after bracket strip: " + expression);
 
         //look for binary implies
         if (expression.contains(">"))
@@ -96,7 +96,8 @@ public class CtlFormula {
         //look for binary AU
         if (expression.startsWith("A("))
         {
-            String strippedExpression = expression.substring(2, expression.length() - 3);
+//            String strippedExpression = expression.substring(2, expression.length() - 3);
+            String strippedExpression = expression.substring(2, expression.length() - 1);
 //            if (IsBinaryOp(strippedExpression, "U", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(strippedExpression, "U"))
                 return SATkind.AU;
@@ -104,7 +105,8 @@ public class CtlFormula {
         //look for binary EU
         if (expression.startsWith("E("))
         {
-            String strippedExpression = expression.substring(2, expression.length() - 3);
+//            String strippedExpression = expression.substring(2, expression.length() - 3);
+            String strippedExpression = expression.substring(2, expression.length() - 1);
 //            if (IsBinaryOp(strippedExpression, "U", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(strippedExpression, "U"))
                 return SATkind.EU;
@@ -128,38 +130,44 @@ public class CtlFormula {
         }
         if (expression.startsWith("!"))
         {
-            leftExpr = expression.substring(1, expression.length() - 1);
+//            leftExpr = expression.substring(1, expression.length() - 1);
+            leftExpr = expression.substring(1);
             return SATkind.NOT;
         }
         if (expression.startsWith("AX"))
         {
-            leftExpr = expression.substring(2, expression.length() - 2);
+//            leftExpr = expression.substring(2, expression.length() - 2);
+            leftExpr = expression.substring(2);
             return SATkind.AX;
         }
         if (expression.startsWith("EX"))
         {
-            leftExpr = expression.substring(2, expression.length() - 2);
+//            leftExpr = expression.substring(2, expression.length() - 2);
+            leftExpr = expression.substring(2);
             return SATkind.EX;
         }
         if (expression.startsWith("EF"))
         {
-            leftExpr = expression.substring(2, expression.length() - 2);
+//            leftExpr = expression.substring(2, expression.length() - 2);
+            leftExpr = expression.substring(2);
             return SATkind.EF;
         }
         if (expression.startsWith("EG"))
         {
 //            leftExpr = expression.substring(2, expression.length() - 2);
-            leftExpr = expression.substring(2, expression.length() - 1);
+            leftExpr = expression.substring(2);
             return SATkind.EG;
         }
         if (expression.startsWith("AF"))
         {
-            leftExpr = expression.substring(2, expression.length() - 2);
+//            leftExpr = expression.substring(2, expression.length() - 2);
+            leftExpr = expression.substring(2);
             return SATkind.AF;
         }
         if (expression.startsWith("AG"))
         {
-            leftExpr = expression.substring(2, expression.length() - 2);
+//            leftExpr = expression.substring(2, expression.length() - 2);
+            leftExpr = expression.substring(2);
             return SATkind.AG;
         }
 
@@ -178,17 +186,12 @@ public class CtlFormula {
 
         List<State> states = new LinkedList<State>();
 
-        String leftExpr = "";
-        String rightExpr = "";
-
 //        SATkind satkind = getSATkind(expression, leftExpr, rightExpr);
         SATkind satkind = getSATkind(expression);
 
-        System.out.println("SAT kind: " + satkind);
-        System.out.println("Left expression: " + leftExpr);
-        System.out.println("Right expression: " + rightExpr);
-
-
+//        System.out.println("SAT kind: " + satkind);
+//        System.out.println("Left expression: " + leftExpr);
+//        System.out.println("Right expression: " + rightExpr);
 
         switch (satkind)
         {
@@ -265,7 +268,6 @@ public class CtlFormula {
                 break;
             }
             case EX -> {
-                //TODO: reevaluate exFormula
                 String exFormula = leftExpr;
                 states = SAT_EX(exFormula);
                 break;
@@ -444,13 +446,15 @@ public class CtlFormula {
 
             for (int i = 0; i < expression.length(); i++)
             {
-                String currentChar = expression.substring(i, 1);
+//                String currentChar = expression.substring(i, 1);
+                String currentChar = String.valueOf(expression.charAt(i));
                 if (currentChar.equals(symbol) && openParanthesisCount == closeParanthesisCount)
                 {
 //                    leftExpression = expression.substring(0, i);
 //                    rightExpression = expression.substring(i + 1, expression.length() - i - 1);
                     leftExpr = expression.substring(0, i);
-                    rightExpr = expression.substring(i + 1, expression.length() - i - 1);
+//                    rightExpr = expression.substring(i + 1, expression.length() - i - 1);
+                    rightExpr = expression.substring(i + 1);
                     isBinaryOp = true;
                     break;
                 }
@@ -484,9 +488,9 @@ public class CtlFormula {
     private boolean isAtomic(String expression) { return kripke.atoms.contains(expression); }
 
     //    private splitExpression(String )
-    private String RemoveExtraBrackets(String expression)
+    private String RemoveExtraBrackets(String expr)
     {
-        String newExpression = expression;
+        String newExpression = expr;
         int openParanthesis = 0;
         int closeParanthesis = 0;
 

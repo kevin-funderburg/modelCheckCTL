@@ -2,9 +2,9 @@ package modelCheckCTL.util;
 
 public class Transition {
 
-    String name;
-    State FromState;
-    State ToState;
+    public String name;
+    public State FromState;
+    public State ToState;
 
     public Transition(State fromState, State toState)
     {
