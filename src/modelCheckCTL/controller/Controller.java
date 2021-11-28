@@ -27,13 +27,19 @@ public class Controller {
 				"Available Kripke structures: 1, 2, 3, 4, 5, 6, 7, Microwave");
 
 		System.out.print("Enter the desired model: ");
-		String modelNum = reader.readLine();
+		String model = reader.readLine();
 
 		System.out.print("Enter the CTL formula: ");
 		String ctlExpression = reader.readLine();
 		System.out.println("you entered: " + ctlExpression);
 
-		Path path = Path.of("Test Files/Model " + modelNum  + ".txt");
+		String filename;
+		if (model.equals("Microwave"))
+			 filename = "Microwave Model";
+		else
+			filename = "Model " + model;
+
+		Path path = Path.of("Test Files/" + filename  + ".txt");
 		String kripkeDef = Files.readString(path);
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
