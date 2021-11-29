@@ -1,18 +1,15 @@
 package modelCheckCTL.controller;
-import modelCheckCTL.util.*;
+import modelCheckCTL.model.KripkeStructure;
+import modelCheckCTL.model.State;
+import modelCheckCTL.model.CtlFormula;
+
+import java.util.List;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.InputStream;
-import java.io.FileNotFoundException;  // Import this class to handle errors
-import java.util.Scanner; // Import the Scanner class to read text files
 
-import modelCheckCTL.model.Model;
-import modelCheckCTL.view.View;
 
 public class Controller {
 	
@@ -52,22 +49,21 @@ public class Controller {
 
 		System.out.print("Enter the CTL formula: ");
 		String ctlExpression = reader.readLine();
-		System.out.println("you entered: " + ctlExpression);
+//		System.out.println("you entered: " + ctlExpression);
 
 		Path path = Path.of("Test Files/" + filename  + ".txt");
 		String kripkeDef = Files.readString(path);
 
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
-		kripkeStructure.printStructure();
+		System.out.println(kripkeStructure);
 
 		System.out.println("--------------------------");
 		System.out.println(ctlExpression);
 		System.out.println("--------------------------");
-		for (State state : kripkeStructure.states)
+		for (State state : kripkeStructure.stateList)
 		{
 			CtlFormula ctlFormula = new CtlFormula(ctlExpression, state, kripkeStructure);
-			System.out.println(state.name + ": " + ctlFormula.satisfies());
-		}
-
+			List<State> states = ctlFormula.sat(ctlFormula.expression);
+			System.out.println(state.stateName + ": " + states.contains(state));		}
 	}
 }
