@@ -75,39 +75,32 @@ public class CtlFormula {
         //look for binary implies
         if (expression.contains(">"))
         {
-//            if (IsBinaryOp(expression, ">", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(expression, ">"))
                 return SATkind.IMPLIES;
         }
         //look for binary and
         if (expression.contains("&"))
         {
-//            if (IsBinaryOp(expression, "&", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(expression, "&"))
                 return SATkind.AND;
         }
         //look for binary or
         if (expression.contains("|"))
         {
-//            if (IsBinaryOp(expression, "|", ref leftExpression, ref rightExpression);
             if (IsBinaryOp(expression, "|"))
                 return SATkind.OR;
         }
         //look for binary AU
         if (expression.startsWith("A("))
         {
-//            String strippedExpression = expression.substring(2, expression.length() - 3);
             String strippedExpression = expression.substring(2, expression.length() - 1);
-//            if (IsBinaryOp(strippedExpression, "U", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(strippedExpression, "U"))
                 return SATkind.AU;
         }
         //look for binary EU
         if (expression.startsWith("E("))
         {
-//            String strippedExpression = expression.substring(2, expression.length() - 3);
             String strippedExpression = expression.substring(2, expression.length() - 1);
-//            if (IsBinaryOp(strippedExpression, "U", ref leftExpression, ref rightExpression))
             if (IsBinaryOp(strippedExpression, "U"))
                 return SATkind.EU;
         }
@@ -130,43 +123,36 @@ public class CtlFormula {
         }
         if (expression.startsWith("!"))
         {
-//            leftExpr = expression.substring(1, expression.length() - 1);
             leftExpr = expression.substring(1);
             return SATkind.NOT;
         }
         if (expression.startsWith("AX"))
         {
-//            leftExpr = expression.substring(2, expression.length() - 2);
             leftExpr = expression.substring(2);
             return SATkind.AX;
         }
         if (expression.startsWith("EX"))
         {
-//            leftExpr = expression.substring(2, expression.length() - 2);
             leftExpr = expression.substring(2);
             return SATkind.EX;
         }
         if (expression.startsWith("EF"))
         {
-//            leftExpr = expression.substring(2, expression.length() - 2);
             leftExpr = expression.substring(2);
             return SATkind.EF;
         }
         if (expression.startsWith("EG"))
         {
-//            leftExpr = expression.substring(2, expression.length() - 2);
             leftExpr = expression.substring(2);
             return SATkind.EG;
         }
         if (expression.startsWith("AF"))
         {
-//            leftExpr = expression.substring(2, expression.length() - 2);
             leftExpr = expression.substring(2);
             return SATkind.AF;
         }
         if (expression.startsWith("AG"))
         {
-//            leftExpr = expression.substring(2, expression.length() - 2);
             leftExpr = expression.substring(2);
             return SATkind.AG;
         }
@@ -366,8 +352,7 @@ public class CtlFormula {
     private List<State> SAT_AF(String expression) throws Exception {
         List<State> x = new LinkedList<State>();
         x.addAll(kripke.states);
-        List<State> y = new LinkedList<State>();
-        y = SAT(expression);
+        List<State> y = SAT(expression);
 
         while (!AreListStatesEqual(x, y))
         {
@@ -507,7 +492,7 @@ public class CtlFormula {
             }
 
             if (openParanthesis - 1 == closeParanthesis)
-                newExpression = expression.substring(1, expression.length() - 2);
+                newExpression = expression.substring(1, expression.length() - 1);
         }
         return newExpression;
     }

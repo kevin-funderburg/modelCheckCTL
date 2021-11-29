@@ -60,6 +60,9 @@ public class Controller {
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
 		kripkeStructure.printStructure();
 
+		System.out.println("--------------------------");
+		System.out.println(ctlExpression);
+		System.out.println("--------------------------");
 		for (State state : kripkeStructure.states)
 		{
 			CtlFormula ctlFormula = new CtlFormula(ctlExpression, state, kripkeStructure);
