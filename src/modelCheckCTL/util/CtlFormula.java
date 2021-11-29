@@ -64,7 +64,6 @@ public class CtlFormula {
         return states.contains(_state);
     }
 
-//    private SATkind getSATkind(String expr, String leftExpr, String rightExpr)
     private SATkind getSATkind(String expression)
     {
 
@@ -171,7 +170,6 @@ public class CtlFormula {
      * @return
      * @throws Exception
      */
-//    private List<State> SAT(String expression) throws Exception {
     private List<State> SAT(String expression) throws Exception {
 //        System.out.println("Original expression: " + expression);
         expression = expression.trim();
@@ -375,8 +373,7 @@ public class CtlFormula {
     {
         //{s ∈ S | exists s, (s → s and s ∈ Y )}
         List<State> states = new LinkedList<>();
-
-//        List<Transition> transitions = new LinkedList<Transition>();
+        List<Transition> transitions = new LinkedList<Transition>();
         for (State sourceState : _kripke.states)
         {
             for (State destState : y)
@@ -411,7 +408,6 @@ public class CtlFormula {
         return PreEY;
     }
 
-//    private boolean IsBinaryOp(String expression, String symbol, String leftExpression, String rightExpression)
     private boolean IsBinaryOp(String expression, String symbol)
     {
         boolean isBinaryOp = false;
@@ -456,32 +452,28 @@ public class CtlFormula {
 
     private boolean isAtomic(String expression) { return _kripke.atoms.contains(expression); }
 
-    //    private splitExpression(String )
-    private String RemoveExtraBrackets(String expr)
+    private String RemoveExtraBrackets(String expression)
     {
-        String newExpression = expr;
+        String newExpression = expression;
         int openParanthesis = 0;
         int closeParanthesis = 0;
-        int i=0;
 
-        if (expr.startsWith("(") && expr.endsWith(")")) {
-            while (i < expr.length() - 1) {
-                String charExpression = expr.substring(i, i + 1);
+        if (expression.startsWith("(") && expression.endsWith(")"))
+        {
+            for (int i = 0; i < expression.length() - 1; i++)
+            {
+                String charExpression = expression.substring(i, i + 1);
 
                 if (charExpression.equals("("))
                     openParanthesis++;
                 else if (charExpression.equals(")"))
                     closeParanthesis++;
-                i++;
             }
 
-            newExpression = expr.substring(1);
-        } else if (!expr.startsWith("(") && expr.endsWith(")")) {
-            newExpression = expr.substring(0, expr.length() - 1);
-        } else if (expr.startsWith("(") && !expr.endsWith(")")) {
-            newExpression = expr.substring(1);
+            if (openParanthesis - 1 == closeParanthesis)
+                newExpression = expression.substring(1, expression.length() - 1);
         }
-
         return newExpression;
+
     }
 }
