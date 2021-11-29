@@ -24,20 +24,20 @@ enum SATkind
 
 public class CtlFormula {
 
-    public KripkeStructure kripke;
-    public State state;
-    public String expression;
+    public KripkeStructure _kripke;
+    public State _state;
+    public String _expression;
 
-    String leftExpr;
-    String rightExpr;
+    String _leftExpression;
+    String _rightExpression;
 
-    public CtlFormula(String expr, State s, KripkeStructure k)
+    public CtlFormula(String expression, State state, KripkeStructure kripke)
     {
-        kripke = k;
-        state = s;
-        expression = swapSymbols(expr);
-        String leftExpr = "";
-        String rightExpr = "";
+        this._kripke = kripke;
+        this._state = state;
+        this._expression = swapSymbols(expression);
+        this._leftExpression = "";
+        this._rightExpression = "";
     }
 
     public String swapSymbols(String expr)
@@ -60,16 +60,16 @@ public class CtlFormula {
      * @return
      */
     public boolean satisfies() throws Exception {
-        List<State> states = SAT(expression);
-        return states.contains(state);
+        List<State> states = SAT(_expression);
+        return states.contains(_state);
     }
 
 //    private SATkind getSATkind(String expr, String leftExpr, String rightExpr)
-    private SATkind getSATkind(String expr)
+    private SATkind getSATkind(String expression)
     {
 
         //remove extra brackets
-        expression = RemoveExtraBrackets(expr);
+        expression = RemoveExtraBrackets(expression);
 //        System.out.println("expression after bracket strip: " + expression);
 
         //look for binary implies
@@ -108,53 +108,57 @@ public class CtlFormula {
         //look for unary T, F, !, AX, EX, AG, EG, AF, EF, atomic
         if (expression.equals("T"))
         {
-            leftExpr = expression;
+            _leftExpression = expression;
             return SATkind.ALL_TRUE;
         }
         if (expression.equals("F"))
         {
-            leftExpr = expression;
+            _leftExpression = expression;
             return SATkind.ALL_FALSE;
         }
         if (isAtomic(expression))
         {
-            leftExpr = expression;
+            _leftExpression = expression;
             return SATkind.ATOMIC;
         }
         if (expression.startsWith("!"))
         {
-            leftExpr = expression.substring(1);
+            _leftExpression = expression.substring(1);
             return SATkind.NOT;
         }
         if (expression.startsWith("AX"))
         {
-            leftExpr = expression.substring(2);
+            _leftExpression = expression.substring(2);
             return SATkind.AX;
         }
         if (expression.startsWith("EX"))
         {
-            leftExpr = expression.substring(2);
+            _leftExpression = expression.substring(2);
             return SATkind.EX;
         }
         if (expression.startsWith("EF"))
         {
-            leftExpr = expression.substring(2);
+            _leftExpression = expression.substring(2);
             return SATkind.EF;
         }
         if (expression.startsWith("EG"))
         {
-            leftExpr = expression.substring(2);
+            _leftExpression = expression.substring(2);
             return SATkind.EG;
         }
         if (expression.startsWith("AF"))
         {
-            leftExpr = expression.substring(2);
+            _leftExpression = expression.substring(2);
             return SATkind.AF;
         }
         if (expression.startsWith("AG"))
         {
-            leftExpr = expression.substring(2);
+            _leftExpression = expression.substring(2);
             return SATkind.AG;
+        }
+        if (expression.equals("")) {
+            _leftExpression = expression;
+            return SATkind.ALL_TRUE;
         }
 
         return SATkind.UNKNOWN;
@@ -169,36 +173,38 @@ public class CtlFormula {
      */
 //    private List<State> SAT(String expression) throws Exception {
     private List<State> SAT(String expression) throws Exception {
+//        System.out.println("Original expression: " + expression);
+        expression = expression.trim();
 
         List<State> states = new LinkedList<State>();
 
-//        SATkind satkind = getSATkind(expression, leftExpr, rightExpr);
         SATkind satkind = getSATkind(expression);
 
 //        System.out.println("SAT kind: " + satkind);
-//        System.out.println("Left expression: " + leftExpr);
-//        System.out.println("Right expression: " + rightExpr);
+//        System.out.println("Left expression: " + _leftExpression);
+//        System.out.println("Right expression: " + _rightExpression);
+//        System.out.println("------------------------------");
 
         switch (satkind)
         {
             case ALL_TRUE -> {
-                states.addAll(kripke.states);
+                states.addAll(_kripke.states);
                 break;
             }
             case ALL_FALSE -> {
                 break;
             }
             case ATOMIC -> {
-                for (State state : kripke.states)
+                for (State state : _kripke.states)
                 {
-                    if (state.atoms.contains(leftExpr))
+                    if (state.atoms.contains(_leftExpression))
                         states.add(state);
                 }
                 break;
             }
             case NOT -> {
-                states.addAll(kripke.states);
-                List<State> f1States = SAT(leftExpr);
+                states.addAll(_kripke.states);
+                List<State> f1States = SAT(_leftExpression);
 
                 for (State state : f1States)
                     states.remove(state);
@@ -206,8 +212,8 @@ public class CtlFormula {
                 break;
             }
             case AND -> {
-                List<State> andF1States = SAT(leftExpr);
-                List<State> andF2States = SAT(rightExpr);
+                List<State> andF1States = SAT(_leftExpression);
+                List<State> andF2States = SAT(_rightExpression);
 
                 for (State state : andF1States)
                 {
@@ -217,8 +223,8 @@ public class CtlFormula {
                 break;
             }
             case OR -> {
-                List<State> orF1States = SAT(leftExpr);
-                List<State> orF2States = SAT(rightExpr);
+                List<State> orF1States = SAT(_leftExpression);
+                List<State> orF2States = SAT(_rightExpression);
 
                 states = orF1States;
                 for (State state : orF2States)
@@ -229,19 +235,19 @@ public class CtlFormula {
                 break;
             }
             case IMPLIES -> {
-                String impliesFormula = "!" + leftExpr + "|" + rightExpr;
+                String impliesFormula = "!" + _leftExpression + "|" + _rightExpression;
                 states = SAT(impliesFormula);
                 break;
             }
             case AX -> {
-                String axFormula = "!EX!" + leftExpr;
+                String axFormula = "!EX!" + _leftExpression;
                 states = SAT(axFormula);
 
                 //check if states actually has link to next state
                 List<State> tempStates = new LinkedList<State>();
                 for (State sourceState : states)
                 {
-                    for (Transition transition : kripke.transitions)
+                    for (Transition transition : _kripke.transitions)
                     {
                         if (sourceState.equals(transition.FromState))
                         {
@@ -254,50 +260,50 @@ public class CtlFormula {
                 break;
             }
             case EX -> {
-                String exFormula = leftExpr;
+                String exFormula = _leftExpression;
                 states = SAT_EX(exFormula);
                 break;
             }
             case AU -> {
                 StringBuilder auFormulaBuilder = new StringBuilder();
                 auFormulaBuilder.append("!(E(!");
-                auFormulaBuilder.append(rightExpr);
+                auFormulaBuilder.append(_rightExpression);
                 auFormulaBuilder.append("U(!");
-                auFormulaBuilder.append(leftExpr);
+                auFormulaBuilder.append(_leftExpression);
                 auFormulaBuilder.append("&!");
-                auFormulaBuilder.append(rightExpr);
+                auFormulaBuilder.append(_rightExpression);
                 auFormulaBuilder.append("))|(EG!");
-                auFormulaBuilder.append(rightExpr);
+                auFormulaBuilder.append(_rightExpression);
                 auFormulaBuilder.append("))");
                 states = SAT(auFormulaBuilder.toString());
                 break;
             }
             case EU -> {
-                states = SAT_EU(leftExpr, rightExpr);
+                states = SAT_EU(_leftExpression, _rightExpression);
                 break;
             }
             case EF -> {
-                String efFormula = "E(TU" + leftExpr + ")";
+                String efFormula = "E(TU" + _leftExpression + ")";
                 states = SAT(efFormula);
                 break;
             }
             case EG -> {
-                String egFormula = "!AF!" + leftExpr;
+                String egFormula = "!AF!" + _leftExpression;
                 states = SAT(egFormula);
                 break;
             }
             case AF -> {
-                String afFormula = leftExpr;
+                String afFormula = _leftExpression;
                 states = SAT_AF(afFormula);
                 break;
             }
             case AG -> {
-                String agFormula = "!EF!" + leftExpr;
+                String agFormula = "!EF!" + _leftExpression;
                 states = SAT(agFormula);
                 break;
             }
             case UNKNOWN -> {
-                throw new Exception("Invalid CTL expression");
+                throw new IllegalArgumentException("Invalid CTL expression");
             }
         }
 
@@ -308,29 +314,23 @@ public class CtlFormula {
         //X := SAT (φ);
         //Y := pre∃(X);
         //return Y
-        List<State> x;
-        List<State> y;
-        x = SAT(expression);
-        y = PreE(x);
+        List<State> x = SAT(expression);
+        List<State> y = PreE(x);
         return y;
     }
 
     private List<State> SAT_EU(String leftExpression, String rightExpression) throws Exception {
-        List<State> w = new LinkedList<State>();
-        List<State> x = new LinkedList<State>();
-        List<State> y = new LinkedList<State>();
 
-        w = SAT(leftExpression);
-        x.addAll(kripke.states);
-        y = SAT(rightExpression);
+        List<State> w = SAT(leftExpression);
+        List<State> x = new LinkedList<State>(_kripke.states);
+        List<State> y = SAT(rightExpression);
 
         while (!AreListStatesEqual(x, y))
         {
             x = y;
-            List<State> newY = new LinkedList<State>();
+            List<State> newY = new LinkedList<State>(y);
             List<State> preEStates = PreE(y);
 
-            newY.addAll(y);
             List<State> wAndPreE = new LinkedList<State>();
             for (State state : w)
             {
@@ -349,17 +349,15 @@ public class CtlFormula {
         return y;
     }
 
-    private List<State> SAT_AF(String expression) throws Exception {
-        List<State> x = new LinkedList<State>();
-        x.addAll(kripke.states);
-        List<State> y = SAT(expression);
+    private List<State> SAT_AF(String expr) throws Exception {
+        List<State> x = new LinkedList<>(_kripke.states);
+        List<State> y = SAT(expr);
 
         while (!AreListStatesEqual(x, y))
         {
             x = y;
-            List<State> newY = new LinkedList<State>();
             List<State> preAStates = PreA(y);
-            newY.addAll(y);
+            List<State> newY = new LinkedList<>(y);
 
             for (State state : preAStates)
             {
@@ -376,15 +374,15 @@ public class CtlFormula {
     private List<State> PreE(List<State> y)
     {
         //{s ∈ S | exists s, (s → s and s ∈ Y )}
-        List<State> states = new LinkedList<State>();
+        List<State> states = new LinkedList<>();
 
-        List<Transition> transitions = new LinkedList<Transition>();
-        for (State sourceState : kripke.states)
+//        List<Transition> transitions = new LinkedList<Transition>();
+        for (State sourceState : _kripke.states)
         {
             for (State destState : y)
             {
                 Transition myTransition = new Transition(sourceState, destState);
-                if (kripke.transitions.contains(myTransition))
+                if (_kripke.transitions.contains(myTransition))
                 {
                     if (!states.contains(sourceState))
                         states.add(sourceState);
@@ -399,23 +397,16 @@ public class CtlFormula {
     {
         //pre∀(Y ) = pre∃y − pre∃(S − Y)
         List<State> PreEY = PreE(y);
-
-        List<State> S_Minus_Y = new LinkedList<State>(kripke.states);
+        List<State> S_Minus_Y = new LinkedList<State>(_kripke.states);
 
         for (State state : y)
-        {
-            if (S_Minus_Y.contains(state))
-                S_Minus_Y.remove(state);
-        }
+            S_Minus_Y.remove(state);
 
         List<State> PreE_S_Minus_Y = PreE(S_Minus_Y);
 
         //PreEY - PreE(S-Y)
         for (State state : PreE_S_Minus_Y)
-        {
-            if (PreEY.contains(state))
-                PreEY.remove(state);
-        }
+            PreEY.remove(state);
 
         return PreEY;
     }
@@ -429,28 +420,22 @@ public class CtlFormula {
             int openParanthesisCount = 0;
             int closeParanthesisCount = 0;
 
-            for (int i = 0; i < expression.length(); i++)
+            int i=0;
+            while (i < expression.length() - 1)
             {
-//                String currentChar = expression.substring(i, 1);
                 String currentChar = String.valueOf(expression.charAt(i));
                 if (currentChar.equals(symbol) && openParanthesisCount == closeParanthesisCount)
                 {
-//                    leftExpression = expression.substring(0, i);
-//                    rightExpression = expression.substring(i + 1, expression.length() - i - 1);
-                    leftExpr = expression.substring(0, i);
-//                    rightExpr = expression.substring(i + 1, expression.length() - i - 1);
-                    rightExpr = expression.substring(i + 1);
+                    _leftExpression = expression.substring(0, i);
+                    _rightExpression = expression.substring(i + 1);
                     isBinaryOp = true;
                     break;
-                }
-                else if (currentChar.equals("("))
-                {
+                } else if (currentChar.equals("(")) {
                     openParanthesisCount++;
-                }
-                else if (currentChar.equals(")"))
-                {
+                } else if (currentChar.equals(")")) {
                     closeParanthesisCount++;
                 }
+                i++;
             }
         }
         return isBinaryOp;
@@ -466,11 +451,10 @@ public class CtlFormula {
             if (!list2.contains(state))
                 return false;
         }
-
         return true;
     }
 
-    private boolean isAtomic(String expression) { return kripke.atoms.contains(expression); }
+    private boolean isAtomic(String expression) { return _kripke.atoms.contains(expression); }
 
     //    private splitExpression(String )
     private String RemoveExtraBrackets(String expr)
@@ -478,23 +462,26 @@ public class CtlFormula {
         String newExpression = expr;
         int openParanthesis = 0;
         int closeParanthesis = 0;
+        int i=0;
 
-        if (expression.startsWith("(") && expression.endsWith(")"))
-        {
-            for (int i = 0; i < expression.length() - 1; i++)
-            {
-                String charExpression = expression.substring(i, 1);
+        if (expr.startsWith("(") && expr.endsWith(")")) {
+            while (i < expr.length() - 1) {
+                String charExpression = expr.substring(i, i + 1);
 
                 if (charExpression.equals("("))
                     openParanthesis++;
                 else if (charExpression.equals(")"))
                     closeParanthesis++;
+                i++;
             }
 
-            if (openParanthesis - 1 == closeParanthesis)
-                newExpression = expression.substring(1, expression.length() - 1);
+            newExpression = expr.substring(1);
+        } else if (!expr.startsWith("(") && expr.endsWith(")")) {
+            newExpression = expr.substring(0, expr.length() - 1);
+        } else if (expr.startsWith("(") && !expr.endsWith(")")) {
+            newExpression = expr.substring(1);
         }
+
         return newExpression;
     }
-
 }
