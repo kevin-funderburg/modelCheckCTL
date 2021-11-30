@@ -1,0 +1,42 @@
+s1;s;false
+s2;s;true
+s3;s;false
+s4;s;false
+s5;s;true
+s6;s;true
+s7;s;true
+s1;(not h);true
+s2;(not h);true
+s3;(not h);true
+s4;(not h);false
+s5;(not h);true
+s6;(not h);true
+s7;(not h);false
+s1;EG(not h);true
+s2;EG(not h);true
+s3;EG(not h);true
+s4;EG(not h);false
+s5;EG(not h);true
+s6;EG(not h);false
+s7;EG(not h);false
+s1;(s and EG(not h));false
+s2;(s and EG(not h));true
+s3;(s and EG(not h));false
+s4;(s and EG(not h));false
+s5;(s and EG(not h));true
+s6;(s and EG(not h));false
+s7;(s and EG(not h));false
+s1;EF(s and EG(not h));true
+s2;EF(s and EG(not h));true
+s3;EF(s and EG(not h));true
+s4;EF(s and EG(not h));true
+s5;EF(s and EG(not h));true
+s6;EF(s and EG(not h));true
+s7;EF(s and EG(not h));true
+s1;not(EF(s and EG(not h)));false
+s2;not(EF(s and EG(not h)));false
+s3;not(EF(s and EG(not h)));false
+s4;not(EF(s and EG(not h)));false
+s5;not(EF(s and EG(not h)));false
+s6;not(EF(s and EG(not h)));false
+s7;not(EF(s and EG(not h)));false

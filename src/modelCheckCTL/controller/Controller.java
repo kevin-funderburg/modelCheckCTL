@@ -58,7 +58,7 @@ public class Controller {
 		System.out.println(kripkeStructure);
 
 		System.out.println("--------------------------");
-		System.out.println(ctlExpression);
+		System.out.println("\t" + ctlExpression);
 		System.out.println("--------------------------");
 		for (State state : kripkeStructure.stateList)
 		{

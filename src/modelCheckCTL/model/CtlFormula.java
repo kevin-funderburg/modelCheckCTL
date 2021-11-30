@@ -18,7 +18,7 @@ public class CtlFormula {
 	public CtlFormula(String expression, State state, KripkeStructure kripkeStructure) {
 
 		converstionMap = new HashMap<>();
-		CtlFormulaUtils.loadConverstionMap(converstionMap);
+		CtlFormulaUtils.loadConversionMap(converstionMap);
 		this.kripkeStructure = kripkeStructure;
 		this.expression = CtlFormulaUtils.convertToCTLFormula(expression, converstionMap);
 	}

@@ -124,7 +124,7 @@ public class CtlFormulaUtils {
 		return resultExpr;
 	}
 
-	public static void loadConverstionMap(Map<String, String> converstionMap) {
+	public static void loadConversionMap(Map<String, String> converstionMap) {
 		converstionMap.put("and", "&");
 		converstionMap.put("or", "|");
 		converstionMap.put("->", ">");
