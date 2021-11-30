@@ -2,7 +2,6 @@ package modelCheckCTL.util;
 
 public class ExpressionUtils {
 
-
 	public String expression;
 	public String leftExpr;
 	public String rightExpr;
