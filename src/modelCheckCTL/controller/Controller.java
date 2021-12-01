@@ -13,8 +13,7 @@ import java.nio.file.Path;
 
 public class Controller {
 	
-	public static void main(String[] args)
-			throws Exception {
+	public static void main(String[] args) throws Exception {
 
 		// Enter data using BufferReader
 		BufferedReader reader = new BufferedReader(
@@ -49,7 +48,6 @@ public class Controller {
 
 		System.out.print("Enter the CTL formula: ");
 		String ctlExpression = reader.readLine();
-//		System.out.println("you entered: " + ctlExpression);
 
 		Path path = Path.of("Test Files/" + filename  + ".txt");
 		String kripkeDef = Files.readString(path);
@@ -57,13 +55,13 @@ public class Controller {
 		KripkeStructure kripkeStructure = new KripkeStructure(kripkeDef);
 		System.out.println(kripkeStructure);
 
+		CtlFormula ctlFormula = new CtlFormula(ctlExpression, kripkeStructure);
+		List<State> satisfiedStates = ctlFormula.SAT(ctlFormula.expression);
+
 		System.out.println("--------------------------");
 		System.out.println("\t" + ctlExpression);
 		System.out.println("--------------------------");
 		for (State state : kripkeStructure.stateList)
-		{
-			CtlFormula ctlFormula = new CtlFormula(ctlExpression, state, kripkeStructure);
-			List<State> states = ctlFormula.sat(ctlFormula.expression);
-			System.out.println(state.stateName + ": " + states.contains(state));		}
+			System.out.println(state.stateName + ": " + satisfiedStates.contains(state));
 	}
 }

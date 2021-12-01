@@ -14,7 +14,7 @@ public class CtlFormula {
 	public String expression;
 	private Map<String, String> conversionMap;
 
-	public CtlFormula(String expression, State state, KripkeStructure kripkeStructure) {
+	public CtlFormula(String expression, KripkeStructure kripkeStructure) {
 
 		conversionMap = new HashMap<>();
 		loadConversionMap(conversionMap);
@@ -22,12 +22,7 @@ public class CtlFormula {
 		this.expression = convertToCTLFormula(expression, conversionMap);
 	}
 
-//	public boolean satisfies() throws Exception {
-////		ModelVerifier verifier = new ModelVerifier(expression, state, kripkeModel);
-//		List<ModelState> states = sat(expression);
-//		return states.contains(state);
-//	}
-	public List<State> sat(String expression) throws Exception {
+	public List<State> SAT(String expression) throws Exception {
 
 		List<State> statesList = new ArrayList<>();
 		ExpressionUtils ex = new ExpressionUtils(expression);
@@ -36,89 +31,98 @@ public class CtlFormula {
 		String leftExpr = ex.leftExpr;
 		String rightExpr = ex.rightExpr;
 
-		switch (satType) {
-		case Constants.ALLTRUE:
-			statesList.addAll(kripkeStructure.stateList);
-			break;
-		case Constants.ALLFALSE:
-			break;
-		case Constants.ATOMIC:
-			if (!kripkeStructure.atomsList.contains(leftExpr))
-				throw new Exception("Ivalid atom present in the formula");
-			for (State state : kripkeStructure.stateList) {
-				if (state.atomsList.contains(leftExpr))
-					statesList.add(state);
-			}
-			break;
-		case Constants.NOT:
-			statesList.addAll(kripkeStructure.stateList);
-			for (State state : sat(leftExpr)) {
-				if (statesList.contains(state))
+		switch (satType)
+		{
+			case Constants.ALLTRUE:
+				statesList.addAll(kripkeStructure.stateList);
+				break;
+			case Constants.ALLFALSE:
+				break;
+			case Constants.ATOMIC:
+				if (!kripkeStructure.atomsList.contains(leftExpr))
+					throw new Exception("Ivalid atom present in the formula");
+				for (State state : kripkeStructure.stateList) {
+					if (state.atomsList.contains(leftExpr))
+						statesList.add(state);
+				}
+				break;
+			case Constants.NOT:
+				statesList.addAll(kripkeStructure.stateList);
+				for (State state : SAT(leftExpr))
 					statesList.remove(state);
-			}
-			break;
-		case Constants.AND:
-			List<State> andf1List = sat(leftExpr);
-			List<State> andf2List = sat(rightExpr);
-			for (State state : andf1List) {
-				if (andf2List.contains(state))
-					statesList.add(state);
-			}
-			break;
-		case Constants.OR:
-			List<State> orf1List = sat(leftExpr);
-			List<State> orf2List = sat(rightExpr);
-			statesList = orf1List;
-			for (State state : orf2List) {
-				if (!statesList.contains(state))
-					statesList.add(state);
-			}
-			break;
-		case Constants.IMPLIES:
-			String impliesFormula = "!" + leftExpr + "|" + rightExpr;
-			statesList = sat(impliesFormula);
-			break;
-		case Constants.AX:
-			String axFormula = "!" + "EX" + "!" + leftExpr;
-			statesList = sat(axFormula);
-			List<State> tempList = new ArrayList<>();
-			for (State state : statesList) {
-				for (Transition trans : kripkeStructure.transList) {
-					if (state.equals(trans.fromState)) {
-						tempList.add(state);
-						break;
+				break;
+			case Constants.AND:
+				List<State> andf1List = SAT(leftExpr);
+				List<State> andf2List = SAT(rightExpr);
+				for (State state : andf1List) {
+					if (andf2List.contains(state))
+						statesList.add(state);
+				}
+				break;
+			case Constants.OR:
+				List<State> orf1List = SAT(leftExpr);
+				List<State> orf2List = SAT(rightExpr);
+				statesList = orf1List;
+				for (State state : orf2List) {
+					if (!statesList.contains(state))
+						statesList.add(state);
+				}
+				break;
+			case Constants.IMPLIES:
+				String impliesFormula = "!" + leftExpr + "|" + rightExpr;
+				statesList = SAT(impliesFormula);
+				break;
+			case Constants.AX:
+				String axFormula = "!" + "EX" + "!" + leftExpr;
+				statesList = SAT(axFormula);
+				List<State> tempList = new ArrayList<>();
+				for (State state : statesList)
+				{
+					for (Transition trans : kripkeStructure.transList)
+					{
+						if (state.equals(trans.fromState)) {
+							tempList.add(state);
+							break;
+						}
 					}
 				}
-			}
-			statesList = tempList;
-			break;
+				statesList = tempList;
+				break;
 
-		case Constants.EX:
-			statesList = satEX(leftExpr);
-			break;
-		case Constants.AU:
-			StringBuilder sb = new StringBuilder();
-			String auFormula = sb.append("!(E(!").append(rightExpr).append("U(!").append(leftExpr).append("&!")
-					.append(rightExpr).append("))|(EG!").append(rightExpr).append("))").toString();
-			statesList = sat(auFormula);
-			break;
-		case Constants.EU:
-			statesList = satEU(leftExpr, rightExpr);
-			break;
-		case Constants.EF:
-			statesList = sat("E(TU" + leftExpr + ")");
-			break;
-		case Constants.EG:
-			statesList = sat("!AF!" + leftExpr);
-			break;
-		case Constants.AF:
-			statesList = satAF(leftExpr);
-			break;
-		case Constants.AG:
-			statesList = sat("!EF!" + leftExpr);
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid formula ");
+			case Constants.EX:
+				statesList = SAT_EX(leftExpr);
+				break;
+			case Constants.AU:
+				StringBuilder sb = new StringBuilder();
+				String auFormula =
+						sb.append("!(E(!")
+						.append(rightExpr)
+						.append("U(!")
+						.append(leftExpr)
+						.append("&!")
+						.append(rightExpr)
+						.append("))|(EG!")
+						.append(rightExpr)
+						.append("))").toString();
+				statesList = SAT(auFormula);
+				break;
+			case Constants.EU:
+				statesList = SAT_EU(leftExpr, rightExpr);
+				break;
+			case Constants.EF:
+				statesList = SAT("E(TU" + leftExpr + ")");
+				break;
+			case Constants.EG:
+				statesList = SAT("!AF!" + leftExpr);
+				break;
+			case Constants.AF:
+				statesList = satAF(leftExpr);
+				break;
+			case Constants.AG:
+				statesList = SAT("!EF!" + leftExpr);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid formula ");
 		}
 		return statesList;
 	}
@@ -127,7 +131,7 @@ public class CtlFormula {
 		List<State> tempList = new ArrayList<>();
 		List<State> result = new ArrayList<>();
 		tempList.addAll(kripkeStructure.stateList);
-		result = sat(expression);
+		result = SAT(expression);
 		while (!(tempList.size() == result.size() && tempList.containsAll(result))) {
 			tempList = result;
 			List<State> newTemp = new ArrayList<>();
@@ -157,8 +161,10 @@ public class CtlFormula {
 	private List<State> preE(List<State> result) {
 
 		List<State> states = new ArrayList<>();
-		for (State fromState : kripkeStructure.stateList) {
-			for (State toState : result) {
+		for (State fromState : kripkeStructure.stateList)
+		{
+			for (State toState : result)
+			{
 				Transition trans = new Transition(fromState, toState);
 				if (kripkeStructure.transList.contains(trans)) {
 					if (!states.contains(fromState))
@@ -169,26 +175,27 @@ public class CtlFormula {
 		return states;
 	}
 
-	private List<State> satEX(String expression) throws Exception {
+	private List<State> SAT_EX(String expression) throws Exception {
 
 		List<State> x = new ArrayList<>();
 		List<State> y = new ArrayList<>();
-		x = sat(expression);
+		x = SAT(expression);
 		y = preE(x);
 		return y;
 	}
 
-	private List<State> satEU(String leftExpr, String rightExpr) throws Exception {
+	private List<State> SAT_EU(String leftExpr, String rightExpr) throws Exception {
 
 		List<State> w = new ArrayList<>();
 		List<State> x = new ArrayList<>();
 		List<State> y = new ArrayList<>();
 
-		w = sat(leftExpr);
+		w = SAT(leftExpr);
 		x.addAll(kripkeStructure.stateList);
-		y = sat(rightExpr);
+		y = SAT(rightExpr);
 
-		while (!(x.size() == y.size() && x.containsAll(y))) {
+		while (!(x.size() == y.size() && x.containsAll(y)))
+		{
 			x = y;
 			List<State> newY = new ArrayList<>();
 			List<State> preEStates = preE(y);
@@ -240,7 +247,7 @@ public class CtlFormula {
 			ex.leftExpr = expression;
 			return Constants.ALLFALSE;
 		}
-		if (isAtomicFormula(expression, kripkeStructure)) {
+		if (isAtomic(expression, kripkeStructure)) {
 			ex.leftExpr = expression;
 			return Constants.ATOMIC;
 		}
@@ -299,10 +306,8 @@ public class CtlFormula {
 		return isBinary;
 	}
 
-	private static boolean isAtomicFormula(String expression, KripkeStructure kripkeStructure) {
-		if (kripkeStructure.atomsList.contains(expression))
-			return true;
-		return false;
+	private static boolean isAtomic(String expression, KripkeStructure kripkeStructure) {
+		return kripkeStructure.atomsList.contains(expression);
 	}
 
 	private static String formatBrackets(String expression) {
@@ -340,4 +345,10 @@ public class CtlFormula {
 
 		return expression;
 	}
+
+	//	public boolean satisfies() throws Exception {
+////		ModelVerifier verifier = new ModelVerifier(expression, state, kripkeModel);
+//		List<ModelState> states = sat(expression);
+//		return states.contains(state);
+//	}
 }

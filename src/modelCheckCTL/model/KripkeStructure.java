@@ -3,8 +3,6 @@ package modelCheckCTL.model;
 import java.util.ArrayList;
 import java.util.List;
 
-//import modelCheckCTL.util.Constants;
-
 public class KripkeStructure {
 
 	public ArrayList<Transition> transList = new ArrayList<>();
@@ -14,7 +12,6 @@ public class KripkeStructure {
 	public KripkeStructure(String definition) throws Exception {
 
 		try {
-
 			String[] parsedDefs = definition.replaceAll("\n", "")
 					.replaceAll("\t", "").split(";");
 			if (parsedDefs.length < 3)
@@ -35,9 +32,9 @@ public class KripkeStructure {
 
 	private void parseStates(String[] states) throws Exception {
 
-		for (String state : states) {
+		for (String state : states)
+		{
 			State st = new State();
-
 			st.stateName = state.replaceAll("[^a-zA-Z0-9]", "");
 
 			if (!stateList.contains(st)) {
@@ -50,8 +47,8 @@ public class KripkeStructure {
 
 	private void parseTransitions(String[] transitions) throws Exception {
 
-		for (String transition : transitions) {
-//			String[] parsedTrans = transition.split(Constants.VALUE_COL_SEPARATER);
+		for (String transition : transitions)
+		{
 			String[] parsedTrans = transition.split(":");
 			if (parsedTrans == null || parsedTrans.length != 2)
 				throw new Exception("Invalid transition definition");
@@ -83,8 +80,8 @@ public class KripkeStructure {
 
 	private void parseAtoms(String[] atoms) throws Exception {
 
-		for (String atom : atoms) {
-//			String[] parsedAtom = atom.split(Constants.VALUE_COL_SEPARATER);
+		for (String atom : atoms)
+		{
 			String[] parsedAtom = atom.split(":");
 			if (parsedAtom == null || parsedAtom.length != 2)
 				throw new Exception("Invalid atoms definition");
@@ -94,7 +91,8 @@ public class KripkeStructure {
 
 			List<String> stateAtoms = new ArrayList<>();
 
-			for (String a : atomList) {
+			for (String a : atomList)
+			{
 				if (!a.isEmpty()) {
 					if (!stateAtoms.contains(a))
 						stateAtoms.add(a);
