@@ -24,27 +24,37 @@ public class Controller {
 		System.out.print("Available Kripke structures: ");
 		for (String fn : filenames)
 			System.out.print(fn + " ");
-
 		System.out.print("\n");
+		System.out.println("(Enter 'b' before a number to test a broken model)");
 
 		System.out.print("Enter the desired model: ");
 		String model = reader.readLine();
 
+		boolean broken = model.startsWith("b");
+
+		if (broken)
+			model = model.substring(1);
+
 		boolean validName = false;
 		for (String fn : filenames)
 		{
-			if (fn.equals(model))
+			if (fn.equals(model)) {
 				validName = true;
+				break;
+			}
 		}
 
 		if (!validName)
 			throw new Exception("invalid file name");
 
-		String filename;
+		String filename = "";
 		if (model.equals("Microwave"))
 			filename = "Microwave Model";
-		else
-			filename = "Model " + model;
+		else {
+			if (broken)
+				filename = "Broken ";
+			filename += "Model " + model;
+		}
 
 		System.out.print("Enter the CTL formula: ");
 		String ctlExpression = reader.readLine();
